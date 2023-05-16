@@ -1,0 +1,57 @@
+---
+- name: Create a new user and configure permissions
+  hosts: your_debian_host
+  become: yes
+  vars:
+    original_user: user
+    new_user: kali
+    shared_group: sharedgroup
+  vars_prompt:
+    - name: "user_password"
+      prompt: "Enter password for new user"
+      private: yes
+      encrypt: "sha512_crypt"
+      confirm: yes
+      salt_size: 7
+  tasks:
+
+  - name: Get groups of the original user
+    command: groups {{ original_user }}
+    register: original_user_groups
+
+  - name: Create new user with same groups
+    user:
+      name: "{{ new_user }}"
+      groups: "{{ original_user_groups.stdout }}"
+      shell: /bin/bash
+      create_home: yes
+      password: "{{ user_password }}"
+
+  - name: Set default shell for new user to bash
+    command: chsh -s /bin/bash {{ new_user }}
+
+  - name: Create a new group
+    group:
+      name: "{{ shared_group }}"
+      state: present
+
+  - name: Add original and new user to the shared group
+    user:
+      name: "{{ item }}"
+      groups: "{{ shared_group }}"
+      append: yes
+    loop:
+      - "{{ original_user }}"
+      - "{{ new_user }}"
+
+  - name: Change the group ownership and permission of both home directories
+    file:
+      path: "/home/{{ item }}"
+      owner: "{{ item }}"
+      group: "{{ shared_group }}"
+      mode: '0770'
+      recurse: yes
+    loop:
+      - "{{ original_user }}"
+      - "{{ new_user }}"
+...
