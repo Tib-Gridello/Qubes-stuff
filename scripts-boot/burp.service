@@ -1,0 +1,9 @@
+[Unit]
+Description= Add prefs.xml to kali /home
+
+[Service]
+ExecStart=/home/user/qubes-boot/burp-pref.sh
+
+[Install]
+WantedBy=multi-user.target
+
