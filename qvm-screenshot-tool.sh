@@ -286,17 +286,8 @@ unset TEMPARR
 #   shift
 #fi
 
-if [ "$ans" = "" ] ; then
-   ans=$(zenity --list --height=240 --modal --text "Choose capture mode of capturing \n Use:" --radiolist --column "Pick" --column "Option" \
-   $ksnapshottxt \
-   TRUE "Region or Window" \
-   FALSE "Fullscreen" \
-   FALSE "Open last dialog" \
-   FALSE "Open dom0 log" \
-   FALSE "Erase dom0 log" \
-   ) 
-fi
 
+ans="Region or Window"
 #   echo $ans
 
   if [ X"$ans" == X"Ksnapshot" ]; then
