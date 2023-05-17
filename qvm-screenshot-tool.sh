@@ -439,6 +439,10 @@ if [ X"$appvm" != X"" ]; then
    echo "[-] copying screenshot to $APPVM_SHOTS_DIR/$shot"
    cat $DOM0_SHOTS_DIR/$shot \
       |qvm-run --pass-io $appvm "cat > $APPVM_SHOTS_DIR/$shot"
+      
+     ## AJOUT Copy to clipboard si xclip est install
+   qvm-run --pass-io $appvm "xclip -selection clipboard -target image/png -i$APPVM_SHOTS_DIR/$shot"
+   
 
    [[ $mode_not_delete_screen_at_dom -eq 0 ]] && rm -f $DOM0_SHOTS_DIR/$shot && echo "[+] Screen at dom0 deleted $DOM0_SHOTS_DIR/$shot"
    [[ $mode_onlyupload -eq 1 ]] && exit 1
