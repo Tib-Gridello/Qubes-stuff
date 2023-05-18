@@ -1,0 +1,7 @@
+#!/bin/bash
+VPN_CLIENT='openvpn'
+VPN_OPTIONS='--cd /rw/config/vpn/ --config /rw/config/vpn/ovpn_tcp/openvpn-client.ovpn --daemon'
+
+sudo bash /rw/config/vpn/ovpn-manager.sh
+groupadd -rf qvpn ; sleep 2s
+sg qvpn -c "$VPN_CLIENT $VPN_OPTIONS"
