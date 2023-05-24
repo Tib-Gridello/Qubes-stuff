@@ -22,6 +22,6 @@ if [[ -z $folder_name ]]; then
     exit 1
 fi
 
-folder_path= "$firefox_profile_dir/$folder_name"
+folder_path="$firefox_profile_dir/$folder_name"
 
-tar -xf /home/user/qubes-boot/firefox/output.tar -C $folder_path
+sudo tar -xf /home/user/qubes-boot/firefox/output.tar -C $folder_path
