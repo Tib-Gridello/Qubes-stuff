@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Variables
+original_user="user"
+new_user="kali"
+shared_group="sharedgroup"
+
+# Prompt for the new user password if the user doesn't exist yet
+if ! id "$new_user" &>/dev/null; then
+    read -sp "Enter password for new user: " user_password
+    echo ""
+fi
+
+# Get groups of the original user and convert them to a comma-separated list
+original_user_groups=$(groups $original_user | cut -d ':' -f 2 | xargs | tr ' ' ',')
+
+# Create new user with same groups if it does not already exist
+if ! id "$new_user" &>/dev/null; then
+    useradd -m -s /bin/bash -G "$original_user_groups" -p "$(openssl passwd -6 $user_password)" $new_user
+fi
+
+# Set default shell for new user to bash
+chsh -s /bin/bash $new_user
+
+# Check if sharedgroup exists; if not, create it
+if ! getent group $shared_group > /dev/null; then
+    groupadd $shared_group
+fi
+
+# Add original and new user to the shared group
+usermod -aG $shared_group $original_user
+usermod -aG $shared_group $new_user
+
+# Change the group ownership and permission of both home directories to allow group members full access
+chown -R $original_user:$shared_group /home/$original_user
+chmod -R 770 /home/$original_user
+
+chown -R $new_user:$shared_group /home/$new_user
+chmod -R 770 /home/$new_user
+
+echo "Script completed."
